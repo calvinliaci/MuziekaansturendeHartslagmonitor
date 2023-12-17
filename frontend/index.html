@@ -1,0 +1,29 @@
+<h2></h2><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heart Rate Monitor</title>
+</head>
+<body>
+  <h1>Heart Rate Monitor</h1>
+  <div id="data-container">
+    <h2>Data:</h2>
+    <p id="bpm-values"></p>
+    <p id="avg-bpm"></p>
+    <p id="selected-song"></p>
+  </div>
+
+  <script>
+    const socket = new WebSocket('ws://localhost:3000'); // Change the URL to your backend server
+
+    socket.addEventListener('message', (event) => {
+      const data = JSON.parse(event.data);
+      // Update HTML elements with the received data
+      document.getElementById('bpm-values').textContent = `BPM Values: ${data.bpmValues.join(', ')}`;
+      document.getElementById('avg-bpm').textContent = `Average BPM: ${data.avgBpm}`;
+      document.getElementById('selected-song').textContent = `Selected Song: ${data.selectedSong ? data.selectedSong.title : 'None'}`;
+    });
+  </script>
+</body>
+</html>

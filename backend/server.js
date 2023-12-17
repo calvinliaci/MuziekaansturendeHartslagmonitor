@@ -4,83 +4,86 @@ import mqtt from 'mqtt';
 import mysql from 'mysql';
 import fs from 'fs';
 import open from 'open';
+import http from 'http';
+import WebSocket from 'ws';
 // #endregion
 
-let bpmValues = []; // Array to store BPM values
+let bpmValues = [];
 let bpm;
 let avgBpm;
 let isSongPlaying = false;
+let currentSong = null;
 
 // #region Variables
 const VERSION = '1.0';
 const APP = express();
 const PORT = process.env.PORT || 3000;
-const DBCON = mysql.createConnection( {
-  host: "muziekaansturendehartslagmonitor.mysql.database.azure.com",
-  user: "MuziekaansturendeHartslagmonitor",
-  password: "eloict123!",
-  database: "muziekaansturendehartslagmonitordb",
-  timezone: "utc",
+const DBCON = mysql.createConnection({
+  host: 'muziekaansturendehartslagmonitor.mysql.database.azure.com',
+  user: 'MuziekaansturendeHartslagmonitor',
+  password: 'eloict123!',
+  database: 'muziekaansturendehartslagmonitordb',
+  timezone: 'utc',
   ssl: {
-    ca: fs.readFileSync('DigiCertGlobalRootCA.crt.pem')
-  }
-})
+    ca: fs.readFileSync('DigiCertGlobalRootCA.crt.pem'),
+  },
+});
 
+const server = http.createServer(APP);
+const wss = new WebSocket.Server({ server });
 
 const protocol = 'mqtt';
-//const host = '212.204.228.104';
 const host = 'localhost';
 const port = '1883';
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`;
 const connectUrl = `${protocol}://${host}:${port}`;
-//const username = 'ucll';
-//const password = 'demo';
 const topic = 'ucll/test';
 
-// connect to mqtt broker
 const mqttClient = mqtt.connect(connectUrl, {
-    clientId,
-    clean: true,
-    connectTimeout: 4000,
-    //username: username,
-    //password: password,
-    reconnectPeriod: 1000,
-})
-
+  clientId,
+  clean: true,
+  connectTimeout: 4000,
+  reconnectPeriod: 1000,
+});
 
 DBCON.connect(function (err) {
   if (err) throw err;
-  console.log("connected to database!");
-})
+  console.log('connected to database!');
+});
 
-/* ---ACTIVATE MIDDLEWARE--- */
+APP.use("/data", express.static("../frontend"));
+
 APP.use(express.json());
 
-/* ---ENDPOINTS--- */
+APP.get('/', (req, res) => {
+  res.send('Backend Muziekaansturende Hartslagmonitor - VERSIE : ' + VERSION);
+});
 
-APP.get('/' , (req , res) => {
-    res.send('Backend Muziekaansturende Hartslagmonitor - VERSIE : '+VERSION);
-
-})
+// Endpoint to serve data to the frontend
+APP.get('/getData', (req, res) => {
+  res.json({
+    bpmValues: bpmValues,
+    avgBpm: avgBpm,
+    selectedSong: currentSong,
+  });
+});
 
 mqttClient.on('connect', () => {
-
-  console.log('Connected to MQTT server : '+host+':'+port);
+  console.log('Connected to MQTT server : ' + host + ':' + port);
   mqttClient.subscribe([topic], () => {
-    console.log(`Subscribe to topic '${topic}'`)
-  })
-})
+    console.log(`Subscribe to topic '${topic}'`);
+  });
+});
 
 mqttClient.on('message', (topic, payload) => {
-  console.log('Received Message:');
-  console.log('- Topic :', topic);
-  console.log('- Message :', payload.toString());
-
   const receivedData = payload.toString().split(', ');
   bpm = parseFloat(receivedData[0].split('=')[1]);
   avgBpm = parseFloat(receivedData[1].split('=')[1]);
 
   bpmValues.push(bpm);
+
+  // Send data to the frontend when a new message is received
+  sendDataToFrontend();
 
   // Check if a song is currently playing
   if (!isSongPlaying) {
@@ -108,33 +111,28 @@ function selectAndPlaySong(avgBpm) {
 
 function playSong(song) {
   try {
-    isSongPlaying = true; // Set the flag to indicate a song is playing
+    isSongPlaying = true;
     open(song.filePath);
     console.log(`Now playing the song: ${song.title}`);
 
-    // Set a timeout to reset the flag after the song duration
     setTimeout(() => {
       isSongPlaying = false;
       console.log(`Song duration elapsed. Now ready to select a new song.`);
       // Select and play a new song after the duration
-      selectAndPlaySong(avgBpm); // Select using the latest BPM
-    }, song.duration * 1000); // Assuming the duration is in seconds, convert it to milliseconds
+      selectAndPlaySong(avgBpm);
+    }, song.duration * 1000);
   } catch (error) {
     console.error('Error playing the song:', error);
-    isSongPlaying = false; // Reset the flag in case of an error
+    isSongPlaying = false;
   }
 }
 
-
-// Functie om het nummer te selecteren op basis van BPM
 function selectSongByBPM(bpm) {
   return new Promise((resolve, reject) => {
-    // Voer hier je SQL-query uit om het juiste nummer te selecteren op basis van de gemeten BPM
     DBCON.query('SELECT * FROM songs WHERE (bpm >= ? AND bpm <= ?)', [bpm - 5, bpm + 5], (err, result) => {
       if (err) {
         reject(err);
       } else {
-        // Neem aan dat je slechts één nummer wilt teruggeven (de eerste die overeenkomt)
         const selectedSong = result[0];
         resolve(selectedSong);
       }
@@ -142,11 +140,20 @@ function selectSongByBPM(bpm) {
   });
 }
 
+function sendDataToFrontend() {
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(
+        JSON.stringify({
+          bpmValues: bpmValues,
+          avgBpm: avgBpm,
+          selectedSong: currentSong,
+        })
+      );
+    }
+  });
+}
 
-/* ---START SERVER--- */
-APP.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`App running at http://localhost:${PORT}`);
 });
-
-// ---------------------------------------
-// #endregion
