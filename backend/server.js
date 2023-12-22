@@ -3,7 +3,9 @@ import express from 'express';
 import mqtt from 'mqtt';
 import mysql from 'mysql';
 import fs from 'fs';
-import open from 'open';
+import { exec } from 'child_process';
+import { fileURLToPath } from 'url';
+import path from 'path';
 import http from 'http';
 import WebSocket from 'ws';
 // #endregion
@@ -33,11 +35,11 @@ const server = http.createServer(APP);
 const wss = new WebSocket.Server({ server });
 
 const protocol = 'mqtt';
-const host = 'localhost';
+const host = 'linuxservermh.northeurope.cloudapp.azure.com';
 const port = '1883';
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`;
 const connectUrl = `${protocol}://${host}:${port}`;
-const topic = 'ucll/test';
+const topic = 'ucll/muziekaansturendehartslagmonitor';
 
 const mqttClient = mqtt.connect(connectUrl, {
   clientId,
@@ -76,51 +78,98 @@ mqttClient.on('connect', () => {
 });
 
 mqttClient.on('message', (topic, payload) => {
-  const receivedData = payload.toString().split(', ');
-  bpm = parseFloat(receivedData[0].split('=')[1]);
-  avgBpm = parseFloat(receivedData[1].split('=')[1]);
+  // Convert the payload to a number (assuming it contains the BPM value)
+  const receivedBpm = parseFloat(payload.toString());
 
-  bpmValues.push(bpm);
+  if (!isNaN(receivedBpm)) {
+    // Add the received BPM to the array
+    bpmValues.push(receivedBpm);
 
-  // Send data to the frontend when a new message is received
-  sendDataToFrontend();
+    // Calculate the average BPM
+    avgBpm = calculateAverageBpm();
 
-  // Check if a song is currently playing
-  if (!isSongPlaying) {
-    selectAndPlaySong(avgBpm);
+    // Send data to the frontend when a new message is received
+    sendDataToFrontend();
+
+    // Check if a song is currently playing
+    if (!isSongPlaying) {
+      selectAndPlaySong(avgBpm);
+    } else {
+      console.log('A song is currently playing. Wait until it finishes.');
+    }
   } else {
-    console.log('A song is currently playing. Wait until it finishes.');
+    console.error('Invalid BPM value received:', payload.toString());
   }
 });
 
-function selectAndPlaySong(avgBpm) {
-  selectSongByBPM(avgBpm)
-    .then((selectedSong) => {
-      if (selectedSong) {
-        console.log(`Selected Song: ${selectedSong.title} - BPM: ${selectedSong.bpm}`);
-        playSong(selectedSong);
-        currentSong = selectedSong;
-      } else {
-        console.log('No matching song found for the average BPM.');
-      }
-    })
-    .catch((error) => {
-      console.error('Error selecting the song:', error);
-    });
+// Add the following function to calculate the average BPM considering the last 750 values above 50
+function calculateAverageBpm() {
+  const filteredBpmValues = bpmValues
+    .filter(bpm => bpm > 50)
+    .slice(-750); // Select the last 750 BPM values
+
+  if (filteredBpmValues.length === 0) {
+    return 0;
+  }
+
+  const sum = filteredBpmValues.reduce((acc, bpm) => acc + bpm, 0);
+  return sum / filteredBpmValues.length;
 }
 
-function playSong(song) {
+
+
+async function selectAndPlaySong(avgBpm) {
+  try {
+    const selectedSong = await selectSongByBPM(avgBpm);
+    
+    if (selectedSong) {
+      console.log(`Selected Song: ${selectedSong.title} - BPM: ${selectedSong.bpm}`);
+      await playSong(selectedSong);
+      currentSong = selectedSong;
+    } else {
+      console.log('No matching song found for the average BPM.');
+    }
+  } catch (error) {
+    console.error('Error selecting or playing the song:', error);
+  }
+}
+
+async function playSong(song) {
   try {
     isSongPlaying = true;
-    open(song.filePath);
-    console.log(`Now playing the song: ${song.title}`);
 
-    setTimeout(() => {
-      isSongPlaying = false;
-      console.log(`Song duration elapsed. Now ready to select a new song.`);
-      // Select and play a new song after the duration
-      selectAndPlaySong(avgBpm);
-    }, song.duration * 1000);
+    // Get the directory path using import.meta.url
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+
+    // Assuming your MP3 files are in a 'music' directory relative to your script
+    const musicFilePath = path.join(__dirname, 'music', `${song.title}.mp3`);
+
+    // Use double quotes around the file path to handle spaces
+    const command = process.platform === 'win32'
+      ? `start "" "${musicFilePath}"`
+      : `xdg-open "${musicFilePath}"`;
+
+    // Set currentSong before playing the song
+    currentSong = song;
+
+    exec(command, (err) => {
+      if (err) {
+        console.error('Error playing the song:', err);
+      } else {
+        console.log(`Now playing the song: ${song.title}`);
+
+        setTimeout(() => {
+          isSongPlaying = false;
+          console.log(`Song duration elapsed. Now ready to select a new song.`);
+          // Select and play a new song after the duration
+          selectAndPlaySong(avgBpm);
+        }, song.duration * 1000);
+
+        // Send the updated currentSong to the frontend
+        sendDataToFrontend();
+      }
+    });
   } catch (error) {
     console.error('Error playing the song:', error);
     isSongPlaying = false;
