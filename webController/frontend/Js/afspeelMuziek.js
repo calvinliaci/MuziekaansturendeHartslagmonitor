@@ -1,23 +1,6 @@
 // Create a WebSocket connection to the specified server
 const socket = new WebSocket('ws://localhost:3000');
 
-    class MusicExample extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
-        this.shadowRoot.innerHTML = /*html*/`
-        <style>
-            :host {
-                display: block;
-                position: absolute;
-                right: 350px;
-                top: 200px;
-                width: 400px;
-                height: 300px;
-                box-sizing: border-box;
-                background-color: #fff;
-                z-index: 999;
-            }
 // Define a custom HTML element named MusicExample
 class MusicExample extends HTMLElement {
   constructor() {
