@@ -39,7 +39,7 @@ class HeartbeatHeader extends HTMLElement {
             <div>
                 <h1>Heartbeat Tracker</h1>
                 <h2>Hou je hartslag in check.</h2>
-                <p>Hou je hartslag snel en makkelijk bij. Uw gezondheid, onze prioriteit!</p>
+                <p>Hou je hartslag snel en gemakkelijk bij. Uw gezondheid, onze prioriteit!</p>
             </div>
         `;
     }
