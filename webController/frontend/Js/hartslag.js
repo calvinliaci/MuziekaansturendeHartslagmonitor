@@ -19,15 +19,15 @@ class ChartElement extends HTMLElement {
   }
 
   getTemplate() {
-    return `
+    return /*html*/`
     <style>
       :host {
         display: block;
         position: absolute;
-        top: 10px;
-        left: 10px;
-        width: 700px;
-        height: 500px;
+        top: 40px;
+        left: 40px;
+        width: 800px;
+        height: 600px;
         border: 1px solid #ddd;
         box-sizing: border-box;
         background-color: #fff;

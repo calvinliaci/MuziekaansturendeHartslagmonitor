@@ -4,13 +4,13 @@
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        this.shadowRoot.innerHTML = `
+        this.shadowRoot.innerHTML = /*html*/`
         <style>
             :host {
                 display: block;
                 position: absolute;
-                top: 520px;
-                left: 10px;
+                right: 350px;
+                top: 10px;
                 width: 400px;
                 height: 300px;
                 box-sizing: border-box;

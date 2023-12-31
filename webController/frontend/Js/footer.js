@@ -7,7 +7,7 @@
       this.attachShadow({ mode: 'open' });
 
       // Define the HTML content
-      this.shadowRoot.innerHTML = `
+      this.shadowRoot.innerHTML = /*html*/`
         <style>
           .footer-container {
             display: flex;

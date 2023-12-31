@@ -5,6 +5,9 @@ template.innerHTML = /*html*/ `
       border-collapse: collapse;
       width: 40%;
       margin: 20px;
+      top: 500px;
+      right: 50px;
+      position: absolute;
     }
 
     th, td {

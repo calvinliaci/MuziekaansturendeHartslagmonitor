@@ -1,8 +1,12 @@
 const template = document.createElement('template');
-template.innerHTML = `
+template.innerHTML = /*html*/`
   <style>
     :host {
       display: block;
+      position: absolute;
+      top: 720px;
+      left: 40px;
+
       font-family: 'Arial', sans-serif;
       text-align: center;
       padding: 20px;
