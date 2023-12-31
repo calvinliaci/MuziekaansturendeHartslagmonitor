@@ -31,7 +31,6 @@ class ChartElement extends HTMLElement {
         border: 1px solid #ddd;
         box-sizing: border-box;
         background-color: #fff;
-        z-index: 999;
       }
 
       canvas {
@@ -73,7 +72,7 @@ class ChartElement extends HTMLElement {
             type: 'linear',
             position: 'left',
             min: 50,
-            max: 140,
+            max: 220,
           }
         }
       }
