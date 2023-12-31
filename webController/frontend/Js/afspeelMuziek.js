@@ -17,7 +17,7 @@ class MusicExample extends HTMLElement {
           display: block;
           position: absolute;
           right: 350px;
-          top: 10px;
+          top: 250px;
           width: 400px;
           height: 300px;
           box-sizing: border-box;

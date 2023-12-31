@@ -5,7 +5,7 @@ template.innerHTML = /*html*/ `
       border-collapse: collapse;
       width: 40%;
       margin: 20px;
-      top: 700px;
+      top: 650px;
       right: 50px;
       position: absolute;
     }
