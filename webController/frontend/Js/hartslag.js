@@ -33,7 +33,7 @@ class ChartElement extends HTMLElement {
         left: 40px;
         width: 800px;
         height: 600px;
-        border: 1px solid #ddd;
+        border: 1px solid black;
         box-sizing: border-box;
         background-color: #fff;
       }
