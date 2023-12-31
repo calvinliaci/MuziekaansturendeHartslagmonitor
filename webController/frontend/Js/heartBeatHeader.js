@@ -17,7 +17,6 @@ class HeartbeatHeader extends HTMLElement {
                     color: #fff;
                     padding: 20px;
                     z-index: 1000; /* Ensure it's above other elements */
-                    width: 100%;
                     text-align: center;
                 }
 

@@ -12,15 +12,12 @@ template.innerHTML = /*html*/`
     <bpm-table></bpm-table>
     <footer-component></footer-component>
     <bpm-display></bpm-display>
-
-    
 `
 class app extends HTMLElement {
     constructor() {
         super()
         const shadow = this.attachShadow({ mode: "open" }); // zorgt ervoor dat het component een afgeschermde stijl kan hebben
         shadow.append(template.content.cloneNode(true));
-
     }
 }
 
