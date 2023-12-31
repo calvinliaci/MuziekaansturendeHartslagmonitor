@@ -5,7 +5,7 @@ template.innerHTML = /*html*/`
       display: block;
       position: absolute;
       top: 720px;
-      left: 40px;
+      left: 300px;
 
       font-family: 'Arial', sans-serif;
       text-align: center;
