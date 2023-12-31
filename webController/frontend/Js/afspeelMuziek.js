@@ -10,7 +10,7 @@
                 display: block;
                 position: absolute;
                 right: 350px;
-                top: 10px;
+                top: 200px;
                 width: 400px;
                 height: 300px;
                 box-sizing: border-box;

@@ -12,7 +12,7 @@
           .footer-container {
             display: flex;
             justify-content: space-around;
-            top: 950px;
+            top: 1150px;
             left: 0px;
             right: 0px;
             position: absolute;
