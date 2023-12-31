@@ -11,7 +11,7 @@ template.innerHTML = /*html*/ `
     }
 
     th, td {
-      border: 1px solid #ddd;
+      border: 1px solid black;
       padding: 8px;
       text-align: center;
     }
