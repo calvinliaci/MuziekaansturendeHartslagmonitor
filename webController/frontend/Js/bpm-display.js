@@ -4,7 +4,7 @@ template.innerHTML = /*html*/`
     :host {
       display: block;
       position: absolute;
-      top: 920px;
+      top: 930px;
       left: 300px;
 
       font-family: 'Arial', sans-serif;

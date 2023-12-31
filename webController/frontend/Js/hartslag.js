@@ -29,7 +29,7 @@ class ChartElement extends HTMLElement {
       :host {
         display: block;
         position: absolute;
-        top: 40px;
+        top: 250px;
         left: 40px;
         width: 800px;
         height: 600px;
