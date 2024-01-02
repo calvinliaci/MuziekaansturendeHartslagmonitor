@@ -5,13 +5,13 @@ template.innerHTML = /*html*/ `
       border-collapse: collapse;
       width: 40%;
       margin: 20px;
-      top: 500px;
+      top: 650px;
       right: 50px;
       position: absolute;
     }
 
     th, td {
-      border: 1px solid #ddd;
+      border: 1px solid black;
       padding: 8px;
       text-align: center;
     }
@@ -37,46 +37,53 @@ class BPMTable extends HTMLElement {
   constructor() {
     super();
 
+    // Shadow DOM aanmaken
     this.attachShadow({ mode: "open" });
+
+    // Template klonen naar de shadow DOM
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
+    // Interne staat van de component
     this.values = [];
-    this.latestTimestamp = 0; // Timestamp of the latest BPM value received
+    this.latestTimestamp = 0; // Timestamp van de laatst ontvangen BPM-waarde
   }
 
   connectedCallback() {
-    // WebSocket setup (replace 'ws://localhost:3000' with your backend server URL)
+    // WebSocket instellen (vervang 'ws://localhost:3000' door de URL van je backend-server)
     const socket = new WebSocket('ws://localhost:3000');
 
     socket.addEventListener('message', (event) => {
       const data = JSON.parse(event.data);
-      this.updateBPMWithDelay(data.bpmValues, data.timestamp); // Pass the array of BPM values and timestamp
+      this.updateBPMWithDelay(data.bpmValues, data.timestamp); // Doorgeven van de array met BPM-waarden en timestamp
     });
 
-    // Start updating values every 2 seconds
+    // Start het bijwerken van waarden elke 2 seconden
     this.updateValues();
   }
 
+  // Methode om waarden elke 2 seconden bij te werken
   updateValues() {
-    // Schedule the next update after 2 seconds
+    // Plan de volgende update na 2 seconden
     setTimeout(() => {
-      // Call the next update
+      // Roep de volgende update aan
       this.updateValues();
     }, 2000);
   }
 
+  // Methode om BPM-waarden met een vertraging te bij te werken
   updateBPMWithDelay(newBPMArray, timestamp) {
     const currentTime = new Date().getTime();
     if (currentTime - this.latestTimestamp >= 1000) {
-      // Process only if one second has passed since the last BPM value
+      // Verwerk alleen als er één seconde is verstreken sinds de laatste BPM-waarde
       this.latestTimestamp = currentTime;
       this.updateBPM(newBPMArray);
     }
   }
 
+  // Methode om BPM-waarden bij te werken
   updateBPM(newBPM) {
     if (Array.isArray(newBPM) && newBPM.length > 0) {
-      // Get the newest BPM value from the array
+      // Haal de nieuwste BPM-waarde op uit de array
       const latestBPM = newBPM[newBPM.length - 1];
 
       if (!isNaN(latestBPM)) {
@@ -84,15 +91,16 @@ class BPMTable extends HTMLElement {
       }
     }
 
-    // Keep only 10 values
+    // Houd slechts 10 waarden bij
     if (this.values.length > 10) {
       this.values.pop();
     }
 
-    // Update the table
+    // Werk de tabel bij
     this.updateTableBody();
   }
 
+  // Methode om de tbody van de tabel bij te werken
   updateTableBody() {
     const tableBody = this.shadowRoot.getElementById("tableBody");
 
@@ -109,6 +117,7 @@ class BPMTable extends HTMLElement {
     });
   }
 
+  // Hulpmethode om tekst te genereren op basis van de index
   getIndexText(index) {
     if (index === 0) {
       return "Meest Recent";
@@ -118,4 +127,5 @@ class BPMTable extends HTMLElement {
   }
 }
 
+// Definieer de aangepaste HTML-tag 'bpm-table' als een webcomponent
 customElements.define("bpm-table", BPMTable);
