@@ -101,8 +101,8 @@ customElements.define('chart-element', ChartElement);
 document.addEventListener('DOMContentLoaded', () => {
   const socket = new WebSocket('ws://localhost:3000'); // Create a WebSocket connection
 
-  //const chartElement = document.createElement('chart-element'); // Create an instance of ChartElement
-  //document.body.appendChild(chartElement); // Append the custom element to the body
+  const chartElement = document.createElement('chart-element'); // Create an instance of ChartElement
+  document.body.appendChild(chartElement); // Append the custom element to the body
 
   // WebSocket message event listener
   socket.addEventListener('message', (event) => {

@@ -8,7 +8,6 @@ import "./heartBeatHeader.js"
 const template = document.createElement("template")
 template.innerHTML = /*html*/`
     <heartbeat-header></heartbeat-header>
-    <chart-element></chart-element>
     <bpm-display></bpm-display>
     <music-example></music-example>
     <bpm-table></bpm-table>
