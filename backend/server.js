@@ -53,22 +53,9 @@ DBCON.connect(function (err) {
   console.log('connected to database!');
 });
 
-APP.use("/data", express.static("../frontend"));
+APP.use("/", express.static("../frontend"));
 
 APP.use(express.json());
-
-APP.get('/', (req, res) => {
-  res.send('Backend Muziekaansturende Hartslagmonitor - VERSIE : ' + VERSION);
-});
-
-// Endpoint to serve data to the frontend
-APP.get('/getData', (req, res) => {
-  res.json({
-    bpmValues: bpmValues,
-    avgBpm: avgBpm,
-    selectedSong: currentSong,
-  });
-});
 
 mqttClient.on('connect', () => {
   console.log('Connected to MQTT server : ' + host + ':' + port);
@@ -81,7 +68,7 @@ mqttClient.on('message', (topic, payload) => {
   // Convert the payload to a number (assuming it contains the BPM value)
   const receivedBpm = parseFloat(payload.toString());
 
-  if (!isNaN(receivedBpm)) {
+  if (!isNaN(receivedBpm) && receivedBpm > 50) {
     // Add the received BPM to the array
     bpmValues.push(receivedBpm);
 
@@ -98,15 +85,15 @@ mqttClient.on('message', (topic, payload) => {
       console.log('A song is currently playing. Wait until it finishes.');
     }
   } else {
-    console.error('Invalid BPM value received:', payload.toString());
+    console.error('Invalid or low BPM value received:', payload.toString());
   }
 });
+
 
 // Add the following function to calculate the average BPM considering the last 750 values above 50
 function calculateAverageBpm() {
   const filteredBpmValues = bpmValues
-    .filter(bpm => bpm > 50)
-    .slice(-750); // Select the last 750 BPM values
+    .slice(-500); // Select the last 500 BPM values
 
   if (filteredBpmValues.length === 0) {
     return 0;
@@ -133,6 +120,7 @@ async function selectAndPlaySong(avgBpm) {
     console.error('Error selecting or playing the song:', error);
   }
 }
+
 
 async function playSong(song) {
   try {
