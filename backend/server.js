@@ -68,7 +68,7 @@ let previousBpm;
 
 mqttClient.on('message', (topic, payload) => {
   // Convert the payload to a number (assuming it contains the BPM value)
-  const receivedBpm = parseFloat(payload.toString());
+  const receivedBpm = parseInt(payload.toString());
 
   if (!isNaN(receivedBpm) && receivedBpm > 50) {
     // Check if the received BPM is different from the previous one
