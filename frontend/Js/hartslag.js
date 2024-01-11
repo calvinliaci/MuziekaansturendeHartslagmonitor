@@ -4,7 +4,7 @@ class ChartElement extends HTMLElement {
   constructor() {
     super(); // Invoke the constructor of the parent class (HTMLElement)
     this.attachShadow({ mode: 'open' }); // Create a shadow DOM for encapsulation
-    this.chartData = Array.from({ length: 50 }, () => 0); // Initialize chart data with 50 zeroes
+    //this.chartData = Array.from({ length: 50 }, () => 0); // Initialize chart data with 50 zeroes
   }
 
   // ConnectedCallback is called when the element is added to the DOM
@@ -53,7 +53,7 @@ class ChartElement extends HTMLElement {
     this.chart = new Chart(this.ctx, {
       type: 'line',
       data: {
-        labels: Array.from({ length: 50 }, (_, i) => i + 1),
+        labels: Array.from({ length: 500 }, (_, i) => i + 1),
         datasets: [{
           label: 'Laatste 50 waarden',
           data: this.chartData,
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Delay the chart update by 1 second
     setTimeout(() => {
-      const last20Values = data.bpmValues.slice(-50); // Get the last 50 values
+      const last20Values = data.bpmValues.slice(-500); // Get the last 50 values
       chartElement.setChartData(last20Values); // Update the chart data
     }, 1000);
   });
