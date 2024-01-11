@@ -57,17 +57,6 @@ class BPMTable extends HTMLElement {
       this.updateBPMWithDelay(data.bpmValues); // Doorgeven van de array met BPM-waarden en timestamp
     });
 
-    // Start het bijwerken van waarden elke 2 seconden
-    this.updateValues();
-  }
-
-  // Methode om waarden elke 2 seconden bij te werken
-  updateValues() {
-    // Plan de volgende update na 2 seconden
-    setTimeout(() => {
-      // Roep de volgende update aan
-      this.updateValues();
-    }, 2000);
   }
 
   // Methode om BPM-waarden met een vertraging te bij te werken

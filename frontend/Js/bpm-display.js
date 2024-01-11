@@ -1,3 +1,4 @@
+//stap 1
 const template = document.createElement('template');
 template.innerHTML = /*html*/`
   <style>
@@ -48,13 +49,15 @@ template.innerHTML = /*html*/`
   </div>
 `;
 
+//stap 2
 class BPMDisplay extends HTMLElement {
+  //stap 3
   constructor() {
     super();
 
     // Shadow DOM aanmaken
     this.attachShadow({ mode: 'open' });
-
+    //stap 4
     // Initialiseren van BPM-waarden
     this.bpm = 0;
     this.averageBPM = 0;
@@ -62,6 +65,7 @@ class BPMDisplay extends HTMLElement {
     // Component renderen
     this.render();
 
+    //stap 5 & 6
     // WebSocket instellen (vervang 'ws://localhost:3000' door de URL van je backend-server)
     const socket = new WebSocket('ws://localhost:3000');
 
@@ -78,10 +82,12 @@ class BPMDisplay extends HTMLElement {
   // Methode om BPM-waarde met een vertraging van 2 seconden bij te werken
   updateBPMWithDelay(newBPMArray) {
     setTimeout(() => {
+        //stap 7
       this.updateBPM(newBPMArray);
     }, 1000);
   }
 
+  //stap 8
   // Methode om BPM-waarde bij te werken
   updateBPM(newBPMArray) {
     if (Array.isArray(newBPMArray) && newBPMArray.length > 0) {
@@ -90,6 +96,7 @@ class BPMDisplay extends HTMLElement {
 
       if (!isNaN(newBPM)) {
         this.bpm = parseFloat(newBPM);
+        //stap 9
         this.render();
       }
     }
@@ -98,14 +105,17 @@ class BPMDisplay extends HTMLElement {
   // Methode om gemiddelde BPM-waarde met een vertraging van 2 seconden bij te werken
   updateAverageBPMWithDelay(newAverageBPM) {
     setTimeout(() => {
+      //stap 7
       this.updateAverageBPM(newAverageBPM);
     }, 1000);
   }
 
+  //stap 8
   // Methode om gemiddelde BPM-waarde bij te werken
   updateAverageBPM(newAverageBPM) {
     if (!isNaN(newAverageBPM)) {
       this.averageBPM = parseFloat(newAverageBPM);
+      //stap 9
       this.render();
     }
   }
@@ -115,6 +125,7 @@ class BPMDisplay extends HTMLElement {
     // Het template renderen
     const content = document.importNode(template.content, true);
 
+    //stap 10
     // BPM- en gemiddelde BPM-waarden bijwerken in de inhoud
     content.querySelector('.bpm-value').textContent = `${this.bpm.toFixed(0)} BPM`;
     content.querySelector('.average-bpm-value').textContent = `Gemiddeld: ${this.averageBPM.toFixed(0)} BPM`;
@@ -124,5 +135,6 @@ class BPMDisplay extends HTMLElement {
   }
 }
 
+//stap 11
 // Definieer component
 customElements.define('bpm-display', BPMDisplay);
