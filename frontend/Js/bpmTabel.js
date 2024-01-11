@@ -54,7 +54,7 @@ class BPMTable extends HTMLElement {
 
     socket.addEventListener('message', (event) => {
       const data = JSON.parse(event.data);
-      this.updateBPMWithDelay(data.bpmValues, data.timestamp); // Doorgeven van de array met BPM-waarden en timestamp
+      this.updateBPMWithDelay(data.bpmValues); // Doorgeven van de array met BPM-waarden en timestamp
     });
 
     // Start het bijwerken van waarden elke 2 seconden
@@ -71,7 +71,7 @@ class BPMTable extends HTMLElement {
   }
 
   // Methode om BPM-waarden met een vertraging te bij te werken
-  updateBPMWithDelay(newBPMArray, timestamp) {
+  updateBPMWithDelay(newBPMArray) {
     const currentTime = new Date().getTime();
     if (currentTime - this.latestTimestamp >= 1000) {
       // Verwerk alleen als er één seconde is verstreken sinds de laatste BPM-waarde
