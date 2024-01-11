@@ -12,6 +12,7 @@ template.innerHTML = /*html*/`
     <bpm-table></bpm-table>
     <footer-component></footer-component>
     <bpm-display></bpm-display>
+    <chart-element></chart-element>
 `
 class app extends HTMLElement {
     constructor() {
