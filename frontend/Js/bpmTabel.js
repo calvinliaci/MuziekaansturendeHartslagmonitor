@@ -100,22 +100,23 @@ class BPMTable extends HTMLElement {
     this.updateTableBody();
   }
 
-  // Methode om de tbody van de tabel bij te werken
-  updateTableBody() {
-    const tableBody = this.shadowRoot.getElementById("tableBody");
+ // Methode om de tbody van de tabel bij te werken
+updateTableBody() {
+  const tableBody = this.shadowRoot.getElementById("tableBody");
 
-    tableBody.innerHTML = "";
+  tableBody.innerHTML = "";
 
-    this.values.forEach((value, index) => {
-      const row = document.createElement("tr");
-      const indexText = this.getIndexText(index);
-      row.innerHTML = `
-        <td>${indexText}</td>
-        <td>${value}</td>
-      `;
-      tableBody.appendChild(row);
-    });
-  }
+  this.values.forEach((value, index) => {
+    const row = document.createElement("tr");
+    const indexText = this.getIndexText(index);
+    const roundedValue = Math.round(value); // Round the BPM value to the nearest integer
+    row.innerHTML = `
+      <td>${indexText}</td>
+      <td>${roundedValue}</td>
+    `;
+    tableBody.appendChild(row);
+  });
+}
 
   // Hulpmethode om tekst te genereren op basis van de index
   getIndexText(index) {
