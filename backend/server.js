@@ -64,25 +64,35 @@ mqttClient.on('connect', () => {
   });
 });
 
+let previousBpm;
+
 mqttClient.on('message', (topic, payload) => {
   // Convert the payload to a number (assuming it contains the BPM value)
   const receivedBpm = parseFloat(payload.toString());
 
   if (!isNaN(receivedBpm) && receivedBpm > 50) {
-    // Add the received BPM to the array
-    bpmValues.push(receivedBpm);
+    // Check if the received BPM is different from the previous one
+    if (receivedBpm !== previousBpm) {
+      // Add the received BPM to the array
+      bpmValues.push(receivedBpm);
 
-    // Calculate the average BPM
-    avgBpm = calculateAverageBpm();
+      // Calculate the average BPM
+      avgBpm = calculateAverageBpm();
 
-    // Send data to the frontend when a new message is received
-    sendDataToFrontend();
+      // Send data to the frontend when a new message is received
+      sendDataToFrontend();
 
-    // Check if a song is currently playing
-    if (!isSongPlaying) {
-      selectAndPlaySong(avgBpm);
+      // Check if a song is currently playing
+      if (!isSongPlaying) {
+        selectAndPlaySong(avgBpm);
+      } else {
+        console.log('A song is currently playing. Wait until it finishes.');
+      }
+
+      // Update the previousBpm
+      previousBpm = receivedBpm;
     } else {
-      console.log('A song is currently playing. Wait until it finishes.');
+      console.log('Received BPM is the same as the previous one. Ignoring.');
     }
   } else {
     console.error('Invalid or low BPM value received:', payload.toString());

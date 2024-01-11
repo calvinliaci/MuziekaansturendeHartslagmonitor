@@ -30,23 +30,13 @@ unsigned long lastPeakTime = 0;
 unsigned int peakInterval = 600;
 int threshold = 100;
 
-const char* MQTT_SERVER = "212.204.228.104";
+const char* MQTT_SERVER = "linuxservermh.northeurope.cloudapp.azure.com";
 const int MQTT_PORT = 1883;
-const char* MQTT_USER = "ucll";
-const char* MQTT_PASSWORD = "demo";
+
 const String MQTT_CLIENTID = "ESP32-" + String(random(0xffff), HEX);
 
 int counter = 0;
-void callbackMQTT(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Boodschap ontvangen voor topic [");
-  Serial.print(topic);
-  Serial.print("] : ");
-  for (int i = 0; i < length; i++) {
-    Serial.print((char)payload[i]);
-  }
-  Serial.println();
 
-}
 
 void setup() {
   Serial.begin(115200);
@@ -77,13 +67,13 @@ void setup() {
 void connectMQTT() {
   Serial.println("Connecting to MQTT Server ... ");
   mqttClient.setServer(MQTT_SERVER, MQTT_PORT);
-  mqttClient.setCallback(callbackMQTT);
+ 
 
-  if (mqttClient.connect(MQTT_CLIENTID.c_str(), MQTT_USER, MQTT_PASSWORD)) {
+  if (mqttClient.connect(MQTT_CLIENTID.c_str())) {
     Serial.print("Connected to MQTT Server with Clientid : ");
     Serial.println(MQTT_CLIENTID);
 
-    String topic = "ucll/test";
+    String topic = "ucll/muziekaansturendehartslagmonitor";
     if (mqttClient.subscribe(topic.c_str())) {
       Serial.print("Subscribed to topic : ");
       Serial.println(topic);
@@ -93,6 +83,7 @@ void connectMQTT() {
     Serial.println(mqttClient.state());
   }
 }
+
 
 void loop() {
   unsigned long currentMillis = millis();
@@ -146,15 +137,12 @@ void loop() {
 
   Serial.println();
 
-      delay(500);
+    
       counter++;
       String msg =  String(beatsPerMinute);
-      String topic = "ucll/test";
+      String topic = "ucll/muziekaansturendehartslagmonitor";
       mqttClient.publish(topic.c_str(), msg.c_str());
-      Serial.print("Message published for topic [");
-      Serial.print(topic);
-      Serial.print("] : ");
-      Serial.println(msg);
+      
     }
   }
 
