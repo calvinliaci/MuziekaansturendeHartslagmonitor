@@ -109,7 +109,7 @@ updateTableBody() {
   this.values.forEach((value, index) => {
     const row = document.createElement("tr");
     const indexText = this.getIndexText(index);
-    const roundedValue = Math.round(value); // Round the BPM value to the nearest integer
+    const roundedValue = Math.round(value); // afronding getal tot volledig getal
     row.innerHTML = `
       <td>${indexText}</td>
       <td>${roundedValue}</td>
