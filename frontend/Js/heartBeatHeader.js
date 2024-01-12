@@ -5,7 +5,7 @@ class HeartbeatHeader extends HTMLElement {
     }
 
     render() {
-        this.shadowRoot.innerHTML = `
+        this.shadowRoot.innerHTML = /*html*/`
             <style>
                 :host {
                     display: block;

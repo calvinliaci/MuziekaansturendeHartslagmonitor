@@ -19,12 +19,7 @@ class ChartElement extends HTMLElement {
 
   // Render method sets the inner HTML of the shadow DOM
   render() {
-    this.shadowRoot.innerHTML = this.getTemplate();
-  }
-
-  // GetTemplate method returns an HTML template as a string
-  getTemplate() {
-    return /*html*/`
+    this.shadowRoot.innerHTML = /*html*/`
     <style>
       :host {
         display: block;
@@ -74,6 +69,8 @@ class ChartElement extends HTMLElement {
           x: {
             type: 'linear',
             position: 'bottom',
+            min: 0,
+            max: 100,
           },
           y: {
             type: 'linear',
@@ -111,8 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Delay the chart update by 1 second
     setTimeout(() => {
-      const last20Values = data.bpmValues.slice(-100); // Get the last 100 values
-      chartElement.setChartData(last20Values); // Update the chart data
+      const last100Values = data.bpmValues.slice(-100); // Get the last 100 values
+      chartElement.setChartData(last100Values); // Update the chart data
     }, 1000);
   });
 });
